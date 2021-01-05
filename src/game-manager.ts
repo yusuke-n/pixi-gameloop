@@ -72,11 +72,11 @@ class GameManager {
         this.ui_sprites.up.position.y = this.ui_sprites.left.height + 12
         
         const icn_bound = this.ui_sprites.right.getBounds()
-        const movetxt = new PIXI.BitmapText(": move", {fontName: 'PixelMplus12', tint: 0x000000})
-        const jumptxt = new PIXI.BitmapText(": jump", {fontName: 'PixelMplus12', tint: 0x000000})
+        const movetxt = new PIXI.BitmapText(":move", {fontName: 'PixelMplus12', tint: 0x000000})
+        const jumptxt = new PIXI.BitmapText(":jump", {fontName: 'PixelMplus12', tint: 0x000000})
         movetxt.position.x = icn_bound.x + icn_bound.width + 6
         jumptxt.position.x = icn_bound.x + icn_bound.width + 6
-        jumptxt.position.y = movetxt.height + 15
+        jumptxt.position.y = movetxt.height + 12
 
         this.scoreLabel = new PIXI.BitmapText("score:", {fontName: 'PixelMplus12', tint: 0x000000})
         this.scoreTxt = new PIXI.BitmapText(this.score.toString(), { fontName: 'PixelMplus12', tint: 0x000000 })
