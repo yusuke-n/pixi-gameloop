@@ -38,7 +38,6 @@ class KeyboardInput {
     }
 
     onKeyUp(ev: KeyboardEvent) {
-        console.log("keyup")
         this._keydown = false
         this._keyup = true
         this._last_pressed_keycode = undefined
