@@ -35,6 +35,7 @@ class PixiApp {
     }
 
     createApp() {
+        PIXI.autoDetectRenderer({width: APP_WIDTH, height: APP_HEIGHT})
         const app = new PIXI.Application({ width: APP_WIDTH, height: APP_HEIGHT, transparent: false })
         document.getElementById("app").appendChild(app.view)
         return app
