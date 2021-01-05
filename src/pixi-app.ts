@@ -7,16 +7,18 @@ class PixiApp {
     app: PIXI.Application
     type: string  = PIXI.utils.isWebGLSupported() ? "WebGL" : "canvas"
     gameLoop: (delta: number) => void
-    textureLoaded: (loader: PIXI.Loader, resources: Partial<Record<string, PIXI.LoaderResource>>) => void
 
     constructor() {
         this.app = this.createApp()
         this.app.ticker.autoStart = false
-        this.app.loader.add("tileset", "images/tileset.json").add("ui", "images/ui.json").add("bmpfont", "fonts/font.fnt")
     }
 
     get fps(): number {
         return Math.floor(this.app.ticker.FPS)
+    }
+
+    get ticker(): PIXI.Ticker {
+        return this.app.ticker
     }
 
     get stage(): PIXI.Container {
@@ -29,11 +31,7 @@ class PixiApp {
 
     init() {
         this.app.ticker.add(this.gameLoop)
-        this.load()
-    }
-
-    load() {
-        this.app.loader.load(this.textureLoaded)
+        this.app.ticker.start()
     }
 
     createApp() {

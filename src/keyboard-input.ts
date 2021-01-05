@@ -3,6 +3,7 @@ class KeyboardInput {
     _keyup: boolean = true
     _last_pressed_keycode: string
     _pressing_keycodes: {[key:string]:boolean} = {}
+    _uped_key: string
     
     constructor() {
         window.document.addEventListener('keydown', this.onKeyDown.bind(this))
@@ -30,10 +31,18 @@ class KeyboardInput {
         return this._pressing_keycodes[code] === true
     }
 
+    isKeyUped(code: string) {
+        if(!this.isKeyUp) {
+            return false
+        }
+        return code === this._uped_key
+    }
+
     onKeyDown(ev: KeyboardEvent) {
         this._keyup = false
         this._keydown = true
         this._last_pressed_keycode = ev.code
+        this._uped_key = ""
         this._pressing_keycodes[ev.code] = true
     }
 
@@ -41,6 +50,7 @@ class KeyboardInput {
         this._keydown = false
         this._keyup = true
         this._last_pressed_keycode = undefined
+        this._uped_key = ev.code
         this._pressing_keycodes[ev.code] = false
     }
 }

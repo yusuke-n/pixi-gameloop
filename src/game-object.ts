@@ -2,6 +2,9 @@ import * as PIXI from 'pixi.js'
 
 abstract class GameObject {
     _sprite: PIXI.Sprite
+    _stage: PIXI.Container
+    active: boolean
+    destroyed: boolean = false
     position: {
         x: number,
         y: number
@@ -9,16 +12,18 @@ abstract class GameObject {
     vel_x: number = 0
     vel_y: number = 0
 
-    constructor(texture: PIXI.Texture)
+    constructor(texture: PIXI.Texture, stage: PIXI.Container, active: boolean = true)
     {
         const spr = new PIXI.Sprite(texture)
         this._sprite = spr
+        this.active = active
+        this._stage = stage
     }
     
     abstract update(): void
     abstract onHit(target: GameObject): void
 
-    displayTo(container:PIXI.Container, pos_x: number, pos_y: number) {
+    display(pos_x: number, pos_y: number) {
         if(!this._sprite) {
             return
         }
@@ -26,7 +31,7 @@ abstract class GameObject {
         this.position.y = pos_y
         this._sprite.position.x = pos_x
         this._sprite.position.y = pos_y
-        container.addChild(this._sprite)
+        this._stage.addChild(this._sprite)
     }
 
 }

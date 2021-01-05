@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js"
 import GameObject from "./game-object"
 import KeyboardInput from "./keyboard-input"
+import TextureHelper from './texture-helper'
 
 const JUMP_FRAME = 24
 
@@ -10,8 +11,8 @@ class Player extends GameObject {
     _jumping_frame:number = 0
     _jump_disable_frames:number = 0
 
-    constructor(texture: PIXI.Texture) {
-        super(texture)
+    constructor(stage: PIXI.Container) {
+        super(TextureHelper.getFromCache("sushi"),  stage)
         this.kbd = new KeyboardInput()
     }
 
