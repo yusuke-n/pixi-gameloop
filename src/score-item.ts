@@ -37,7 +37,6 @@ class ScoreItem extends GameObject {
     }
 
     destroy() {
-        console.log("item destroyed")
         this._sprite.destroy()
         this.active = false
         this.destroyed = true

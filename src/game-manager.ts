@@ -129,7 +129,6 @@ class GameManager {
         for(const k in this.game_objects) {
             const obj = this.game_objects[k]
             if(obj?.destroyed) {
-                console.log(obj, "is killed")
                 this.game_objects[k] = null
             }
             obj?.update()
