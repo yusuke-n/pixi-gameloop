@@ -10,6 +10,7 @@ class PixiApp {
 
     constructor() {
         this.app = this.createApp()
+        this.app.ticker.stop()
         this.app.ticker.autoStart = false
     }
 
@@ -31,6 +32,9 @@ class PixiApp {
 
     init() {
         this.app.ticker.add(this.gameLoop)
+    }
+
+    start() {
         this.app.ticker.start()
     }
 

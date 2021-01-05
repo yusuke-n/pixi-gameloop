@@ -4,12 +4,11 @@ import GameObject from './game-object'
 import Player from './player'
 import TextureHelper from './texture-helper'
 import KeyboardInput from './keyboard-input'
-import PixiApp from './pixi-app'
 import ScoreItem from './score-item'
+import State from './state'
 
 class GameManager {
     app: App
-    kbd: KeyboardInput
     tiles: { [key:string]: PIXI.TilingSprite } = {}
     scoreLabel: PIXI.BitmapText
     scoreTxt: PIXI.BitmapText
@@ -18,26 +17,26 @@ class GameManager {
     ui_sprites: { [key:string]: PIXI.Sprite } = {}
     player: Player
     game_objects: GameObject[] = []
-    score: number = 0
+    score: number = 9999
     score_span:number = 2800
     from_score_spawned: number = 0
     prev_score_spawned_time: number = 0
 
     constructor() {
         this.app = new App()
-        this.kbd = new KeyboardInput()
         this.app.gameLoop = this.gameLoop.bind(this)
     }
     
     async init() {
         this.app.init()
         await TextureHelper.init()
-        this.setupObjects()
+        this.prepareObjects()
         this.displayInit()
         this.displayUI()
+        this.app.start()
     }
 
-    setupObjects() {
+    prepareObjects() {
         this.player = new Player(this.app.stage)
         this.tiles.ground = new PIXI.TilingSprite(TextureHelper.getFromCache("ground"), this.app.view.width, 32)
         this.tiles.sky = new PIXI.TilingSprite(TextureHelper.getFromCache("sky2"), this.app.view.width, this.app.view.height)
@@ -80,7 +79,9 @@ class GameManager {
         jumptxt.position.y = movetxt.height + 15
 
         this.scoreLabel = new PIXI.BitmapText("score:", {fontName: 'PixelMplus12', tint: 0x000000})
-        this.scoreTxt = new PIXI.BitmapText(this.score.toString(), {fontName: 'PixelMplus12', tint: 0x000000})
+        this.scoreTxt = new PIXI.BitmapText(this.score.toString(), { fontName: 'PixelMplus12', tint: 0x000000 })
+        this.scoreTxt.width = 250
+        this.scoreTxt.scale.set(1)
         this.scoreLabel.position.x = this.app.view.width - this.scoreTxt.width - 64
         this.scoreTxt.position.x = this.app.view.width - this.scoreTxt.width - 6
         this.scoreTxt.position.y = 1
@@ -107,31 +108,38 @@ class GameManager {
     }
 
     gameLoop(delta: number) {
-        if(this.kbd.isKeyPressed("F8")) {
+        if(KeyboardInput.isKeyUp && KeyboardInput.code == 'F8') {
             this.toggleFPS()
         }
 
-        if(this.fps){
-            this.fps.text = this.app.fps.toString()
-        }
+        this.fps.text = this.app.fps.toString()
+        this.scoreTxt.text = State.score.toString().padStart(4, ' ')
+       
 
         this.from_score_spawned += this.app.ticker.elapsedMS
         if(this.from_score_spawned >= this.score_span) {
-            console.log("item spawned")
             this.game_objects.push(ScoreItem.spawn(this.app.stage))
             this.from_score_spawned = 0
         }
+        
+        this.player.update()
+        this.game_objects = this.game_objects.filter((el) => el !== null)
 
-        this.prev_score_spawned_time
-        
-        this.player?.update()
-        
         for(const k in this.game_objects) {
             const obj = this.game_objects[k]
+            
+            if(obj?.isHitted(this.player)) {
+                obj.onHit(this.player)
+            }
+
+            obj?.update()
+
             if(obj?.destroyed) {
+                console.log("item killed by game-manager:", obj)
                 this.game_objects[k] = null
             }
-            obj?.update()
+            
+            
         }
     }
     

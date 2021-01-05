@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js'
 
 abstract class GameObject {
-    _sprite: PIXI.Sprite
-    _stage: PIXI.Container
+    protected _sprite: PIXI.Sprite
+    protected _stage: PIXI.Container
     active: boolean
     destroyed: boolean = false
     position: {
@@ -21,7 +21,12 @@ abstract class GameObject {
     }
     
     abstract update(): void
-    abstract onHit(target: GameObject): void
+    abstract isHitted(target: GameObject): boolean
+    onHit(target: GameObject): void {}
+
+    get boundBox():PIXI.Rectangle {
+        return this._sprite.getBounds()
+    }
 
     display(pos_x: number, pos_y: number) {
         if(!this._sprite) {

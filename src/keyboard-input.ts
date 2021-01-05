@@ -15,6 +15,10 @@ class KeyboardInput {
 
     }
 
+    get code(): string {
+        return this._last_pressed_keycode
+    }
+
     get pressingKeys(): {[key:string]: boolean} {
         return this._pressing_keycodes
     }
@@ -49,10 +53,11 @@ class KeyboardInput {
     onKeyUp(ev: KeyboardEvent) {
         this._keydown = false
         this._keyup = true
-        this._last_pressed_keycode = undefined
         this._uped_key = ev.code
         this._pressing_keycodes[ev.code] = false
     }
 }
 
-export default KeyboardInput
+const kbd = new KeyboardInput()
+
+export default kbd

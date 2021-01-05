@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js"
+import GameManager from "./game-manager"
 import GameObject from "./game-object"
 import KeyboardInput from "./keyboard-input"
 import TextureHelper from './texture-helper'
@@ -6,18 +7,16 @@ import TextureHelper from './texture-helper'
 const JUMP_FRAME = 24
 
 class Player extends GameObject {
-    kbd: KeyboardInput
     _jumping:boolean = false
     _jumping_frame:number = 0
     _jump_disable_frames:number = 0
 
     constructor(stage: PIXI.Container) {
         super(TextureHelper.getFromCache("sushi"),  stage)
-        this.kbd = new KeyboardInput()
     }
 
     update() {
-        if(this.kbd.isKeyPressed("ArrowUp") && !this._jumping) {
+        if(KeyboardInput.isKeyPressed("ArrowUp") && !this._jumping) {
             this.jump()
         }
         if(this._jumping) {
@@ -33,9 +32,9 @@ class Player extends GameObject {
                 this._jumping_frame = 0
             }
         }
-        if(this.kbd.isKeyPressed("ArrowRight")) {
+        if(KeyboardInput.isKeyPressed("ArrowRight")) {
             this.vel_x = 2
-        } else if(this.kbd.isKeyPressed("ArrowLeft")) {
+        } else if(KeyboardInput.isKeyPressed("ArrowLeft")) {
             this.vel_x = -2
         }
         if(Math.abs(this.vel_x) > 0) {
@@ -55,10 +54,9 @@ class Player extends GameObject {
         this._jumping = true
     }
 
-    onHit (target: GameObject) {
-
+    isHitted(target:GameObject): boolean {
+        return false
     }
-
     
 }
 

@@ -1,8 +1,8 @@
 import GameObject from "./game-object"
 
 class Bullet extends GameObject {
-    onHit(target:GameObject) {
-
+    isHitted(target: GameObject): boolean {
+        return false
     }
     update() {
         
