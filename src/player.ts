@@ -1,57 +1,101 @@
 import * as PIXI from "pixi.js"
-import GameManager from "./game-manager"
 import GameObject from "./game-object"
 import KeyboardInput from "./keyboard-input"
 import TextureHelper from './texture-helper'
 
-const JUMP_FRAME = 24
-
-class Player extends GameObject {
+class Player extends GameObject{
     _jumping:boolean = false
     _jumping_frame:number = 0
     _jump_disable_frames:number = 0
+    jump_frame: number = 40
+    jump_height: number = 96
+    spd: number = 1
+    next_spd: number = 0
+    bomb_anime: PIXI.AnimatedSprite
 
     constructor(stage: PIXI.Container) {
         super(TextureHelper.getFromCache("sushi"),  stage)
+        const bomb = new PIXI.AnimatedSprite(TextureHelper.getSpriteSheet("tileset").animations["bomb"])
+        bomb.loop = false
+        bomb.onComplete = () => { 
+            bomb.visible = false
+            bomb.destroy()
+        }
+        this.bomb_anime = bomb
     }
 
     update() {
+        if(this.destroyed) {
+            this._sprite.visible = false
+            return
+        }
+
+        if(!this.active) {
+            return
+        }
+        if(this.next_spd > 0 && !this._jumping) {
+            this.spd = this.next_spd
+            this.next_spd = 0
+        }
         if(KeyboardInput.isKeyPressed("ArrowUp") && !this._jumping) {
             this.jump()
         }
         if(this._jumping) {
+            const jump_frame_with_spd = Math.floor(this.jump_frame / this.spd)
+            const jump_per_frame = Math.floor((this.jump_height / jump_frame_with_spd)*2)
+            console.log(jump_per_frame)
             this._jumping_frame++
-            if(this._jumping_frame > JUMP_FRAME/2) {
-                this.position.y += 4
+            if(this._jumping_frame > jump_frame_with_spd/2) {
+                this.position.y += jump_per_frame
             } else {
-                this.position.y -= 4
+                this.position.y -= jump_per_frame
             }
             
-            if(this._jumping_frame >= JUMP_FRAME) {
+            if(this._jumping_frame >= jump_frame_with_spd) {
                 this._jumping = false
                 this._jumping_frame = 0
             }
         }
         if(KeyboardInput.isKeyPressed("ArrowRight")) {
-            this.vel_x = 2
+            this.vel_x = 2 * this.spd
         } else if(KeyboardInput.isKeyPressed("ArrowLeft")) {
-            this.vel_x = -2
+            this.vel_x = -2 * this.spd
         }
         if(Math.abs(this.vel_x) > 0) {
             if(this.vel_x > 0) {
-                this.vel_x = (this.vel_x * 10 - 2)/10
+                this.vel_x = (this.vel_x * 10 - (2 * this.spd))/10
             } else {
-                this.vel_x = (this.vel_x * 10 + 2)/10
+                this.vel_x = (this.vel_x * 10 + (2 * this.spd))/10
             }
         }
 
         this.position.x += this.vel_x
         this._sprite.position.x = this.position.x
         this._sprite.position.y = this.position.y
+        if(this._display_boundbox) {
+            this._box.position.x = this.position.x
+            this._box.position.y = this.position.y
+        }
+    }
+
+    destroy() {
+        super.destroy()
     }
 
     jump() {
         this._jumping = true
+    }
+
+    boom() {
+        if(this.destroyed || !this.active) {
+            return
+        } 
+        const anime = this.bomb_anime
+        anime.position.x = this.position.x
+        anime.position.y = this.position.y
+        anime.animationSpeed = 0.125
+        this._stage.addChild(anime)
+        anime.play()
     }
 
     isHitted(target:GameObject): boolean {

@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import { ViewSize } from './const'
 
 const APP_WIDTH = 288
 const APP_HEIGHT = 256
@@ -6,12 +7,14 @@ const APP_HEIGHT = 256
 class PixiApp {
     app: PIXI.Application
     type: string  = PIXI.utils.isWebGLSupported() ? "WebGL" : "canvas"
+    layer: PIXI.Container[]
     gameLoop: (delta: number) => void
 
     constructor() {
         this.app = this.createApp()
         this.app.ticker.stop()
         this.app.ticker.autoStart = false
+        this.layer = []
     }
 
     get fps(): number {
@@ -20,6 +23,10 @@ class PixiApp {
 
     get ticker(): PIXI.Ticker {
         return this.app.ticker
+    }
+
+    set ticker(val: PIXI.Ticker) {
+        this.app.ticker = val
     }
 
     get stage(): PIXI.Container {
@@ -31,6 +38,8 @@ class PixiApp {
     }
 
     init() {
+        ViewSize.width = this.app.view.width
+        ViewSize.height = this.app.view.height
         this.app.ticker.add(this.gameLoop)
     }
 
@@ -46,4 +55,5 @@ class PixiApp {
     }
 }
 
-export default PixiApp
+const app = new PixiApp()
+export default app
