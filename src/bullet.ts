@@ -86,7 +86,6 @@ class Bullet extends GameObject {
                     y += 32
                 }
             }
-            console.log(`bullet spawned at(${x},${y})`)
             bullets.push({obj: bl, x:x, y:y})
         }
         bullets.map((bl) => bl.obj.display(bl.x, bl.y))
@@ -215,6 +214,7 @@ class Bullet extends GameObject {
         }
         if(this.position.y >= ViewSize.height + this._sprite.height) {
             super.destroy()
+            this._stage.removeChild(this._warning_sprite, this._warning_area_sprite)
             this._warning_sprite.destroy()
             this._warning_area_sprite.destroy()
         }

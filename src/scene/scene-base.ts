@@ -1,37 +1,38 @@
-import GameObject from "./game-object"
+import GameObject from "../game-object"
 import * as PIXI from "pixi.js"
 
 abstract class Scene {
     stage: PIXI.Container
-    _ticker: PIXI.Ticker
-    destroyed: boolean
+    disposed: boolean
+    active: boolean
     objects: GameObject[]
     constructor({ autoStart }:{ autoStart:boolean }) {
         this.objects = []
         this.stage = new PIXI.Container
-        this._ticker = new PIXI.Ticker
-        this.destroyed = false
-        this._ticker.autoStart = autoStart
-        this._ticker.add(this.update)
+        this.disposed = false
+        if(autoStart) {
+            this.start()
+        }
     }
     
 
     start() {
-        this._ticker.start()
+        this.active = true
     }
 
     stop() {
-        this._ticker.stop()
+        this.active = false
     }
 
-    abstract update(): void
+    abstract init(): void
+    abstract update(delta: number): void
+    abstract cleanup(): void
 
     destroy() {
         for(let i = 0; i <this.objects.length; i++) {
             this.objects[i]?.destroy()
         }
-        this.stop()
-        this.destroyed = true
+        this.stage.destroy()
     }
 }
 

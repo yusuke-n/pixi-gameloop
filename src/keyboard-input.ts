@@ -43,6 +43,9 @@ class KeyboardInput {
     }
 
     onKeyDown(ev: KeyboardEvent) {
+        if(ev.code !== 'F5' && ev.code !== 'F12' ) {
+            ev.preventDefault()
+        }
         this._keyup = false
         this._keydown = true
         this._last_pressed_keycode = ev.code
@@ -51,6 +54,7 @@ class KeyboardInput {
     }
 
     onKeyUp(ev: KeyboardEvent) {
+        ev.preventDefault()
         this._keydown = false
         this._keyup = true
         this._uped_key = ev.code

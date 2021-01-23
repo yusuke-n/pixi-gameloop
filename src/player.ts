@@ -2,6 +2,9 @@ import * as PIXI from "pixi.js"
 import GameObject from "./game-object"
 import KeyboardInput from "./keyboard-input"
 import TextureHelper from './texture-helper'
+import { sleep } from "./utils"
+import State from "./state"
+import { ViewSize } from "./const"
 
 class Player extends GameObject{
     _jumping:boolean = false
@@ -17,9 +20,11 @@ class Player extends GameObject{
         super(TextureHelper.getFromCache("sushi"),  stage)
         const bomb = new PIXI.AnimatedSprite(TextureHelper.getSpriteSheet("tileset").animations["bomb"])
         bomb.loop = false
-        bomb.onComplete = () => { 
+        bomb.onComplete = async () => { 
             bomb.visible = false
             bomb.destroy()
+            await sleep(1000)
+            State.gameover = true
         }
         this.bomb_anime = bomb
     }
@@ -41,17 +46,15 @@ class Player extends GameObject{
             this.jump()
         }
         if(this._jumping) {
-            const jump_frame_with_spd = Math.floor(this.jump_frame / this.spd)
-            const jump_per_frame = Math.floor((this.jump_height / jump_frame_with_spd)*2)
-            console.log(jump_per_frame)
+            const jump_per_frame = Math.floor((this.jump_height / this.jump_frame)*2)
             this._jumping_frame++
-            if(this._jumping_frame > jump_frame_with_spd/2) {
+            if(this._jumping_frame > this.jump_frame/2) {
                 this.position.y += jump_per_frame
             } else {
                 this.position.y -= jump_per_frame
             }
             
-            if(this._jumping_frame >= jump_frame_with_spd) {
+            if(this._jumping_frame >= this.jump_frame) {
                 this._jumping = false
                 this._jumping_frame = 0
             }
@@ -68,8 +71,14 @@ class Player extends GameObject{
                 this.vel_x = (this.vel_x * 10 + (2 * this.spd))/10
             }
         }
+        if(
+            (this.vel_x > 0 && (Math.floor(this.position.x) + this._sprite.width + this.vel_x) < ViewSize.width) ||
+            (this.vel_x < 0 && (Math.floor(this.position.x) + this.vel_x > 0))
+        ) {
+            this.position.x += this.vel_x
+        }
 
-        this.position.x += this.vel_x
+        if(Math.floor(this.position.x) + this._sprite.width )
         this._sprite.position.x = this.position.x
         this._sprite.position.y = this.position.y
         if(this._display_boundbox) {

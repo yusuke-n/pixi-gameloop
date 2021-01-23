@@ -33,6 +33,10 @@ class PixiApp {
         return this.app.stage
     }
 
+    set stage(val: PIXI.Container) {
+        this.app.stage = val
+    }
+
     get view(): HTMLCanvasElement {
         return this.app.view
     }
